@@ -1,0 +1,63 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f5f7fa;
+  color: #1a1a2e;
+  font-size: 14px;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* Urgency / status badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.badge-critical    { background: #fee2e2; color: #991b1b; }
+.badge-high        { background: #fef3c7; color: #92400e; }
+.badge-normal      { background: #dbeafe; color: #1e40af; }
+.badge-low         { background: #f3f4f6; color: #6b7280; }
+.badge-new         { background: #fef3c7; color: #92400e; }
+.badge-acknowledged { background: #dbeafe; color: #1e40af; }
+.badge-resolved    { background: #d1fae5; color: #065f46; }
+.badge-reopened    { background: #fee2e2; color: #991b1b; }
+.badge-escalated   { background: #ede9fe; color: #5b21b6; }
+
+/* Card */
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  padding: 20px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  transition: opacity 0.15s;
+}
+.btn:hover    { opacity: 0.85; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary  { background: #1d4ed8; color: white; }
+.btn-success  { background: #059669; color: white; }
+.btn-danger   { background: #dc2626; color: white; }
+.btn-ghost    { background: transparent; color: #4b5563; border: 1px solid #d1d5db; }
