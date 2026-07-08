@@ -22,10 +22,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent.parent / "config" / ".env")
+# Support running from repo root OR from backend/ directory
+_this_dir = Path(__file__).parent
+_backend_dir = _this_dir.parent if _this_dir.name == "bot" else _this_dir
+load_dotenv(_backend_dir / "config" / ".env")
 
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(_backend_dir))
 
 from telegram import (
     Update,

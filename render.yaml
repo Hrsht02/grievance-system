@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: grievance-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DEFAULT_ACK_SLA_MINUTES
+        value: "30"
+      - key: DEFAULT_RESOLUTION_SLA_HOURS
+        value: "48"
+      - key: CRITICAL_ACK_SLA_MINUTES
+        value: "15"
+      - key: CRITICAL_RESOLUTION_SLA_HOURS
+        value: "4"
+
+  - type: worker
+    name: grievance-bot
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot/bot.py
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        sync: false
+      - key: DEFAULT_ACK_SLA_MINUTES
+        value: "30"
+      - key: DEFAULT_RESOLUTION_SLA_HOURS
+        value: "48"
+      - key: CRITICAL_ACK_SLA_MINUTES
+        value: "15"
+      - key: CRITICAL_RESOLUTION_SLA_HOURS
+        value: "4"
