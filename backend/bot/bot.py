@@ -460,6 +460,24 @@ def run_bot():
     if not TELEGRAM_BOT_TOKEN:
         raise RuntimeError("TELEGRAM_BOT_TOKEN is not set in environment.")
 
+    # On Render Web Service, bind a dummy HTTP port so the health check passes
+    port = int(os.environ.get("PORT", 0))
+    if port:
+        import threading
+        from http.server import HTTPServer, BaseHTTPRequestHandler
+
+        class _Health(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b"ok")
+            def log_message(self, *args):
+                pass  # silence access logs
+
+        server = HTTPServer(("0.0.0.0", port), _Health)
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        logger.info("Health check server listening on port %d", port)
+
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
