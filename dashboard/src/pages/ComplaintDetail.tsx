@@ -1,5 +1,6 @@
-import { useEffect, useState, FormEvent } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { useParams } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import Layout from "../components/Layout";
 import api from "../api";
@@ -14,6 +15,7 @@ interface Complaint {
   patient_name: string; patient_mobile: string;
   hospital_name: string; department_name: string;
   acknowledged_at: string | null;
+  patient_confirmed_resolved: boolean | null;
   is_anonymous: boolean;
 }
 
@@ -23,7 +25,6 @@ interface Message {
 
 export default function ComplaintDetail() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [complaint, setComplaint] = useState<Complaint | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [replyText, setReplyText] = useState("");
@@ -78,7 +79,6 @@ export default function ComplaintDetail() {
 
   return (
     <Layout nav={NAV}>
-      {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
         <div>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 6 }}>
@@ -100,28 +100,14 @@ export default function ComplaintDetail() {
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           {canAck && (
-            <button
-              className="btn btn-primary"
-              onClick={acknowledge}
-              disabled={actionLoading === "ack"}
-              style={{
-                background: ackSuccess ? "#059669" : "#1d4ed8",
-                transition: "background 0.3s ease",
-              }}
-            >
+            <button className="btn btn-primary" onClick={acknowledge} disabled={actionLoading === "ack"}
+              style={{ background: ackSuccess ? "#059669" : "#1d4ed8", transition: "background 0.3s ease" }}>
               {actionLoading === "ack" ? "…" : ackSuccess ? "✓ Acknowledged" : "Mark Acknowledged"}
             </button>
           )}
           {canResolve && (
-            <button
-              className="btn btn-success"
-              onClick={resolve}
-              disabled={actionLoading === "res"}
-              style={{
-                background: resolveSuccess ? "#16a34a" : "#059669",
-                transition: "background 0.3s ease",
-              }}
-            >
+            <button className="btn btn-success" onClick={resolve} disabled={actionLoading === "res"}
+              style={{ background: resolveSuccess ? "#16a34a" : "#059669", transition: "background 0.3s ease" }}>
               {actionLoading === "res" ? "…" : resolveSuccess ? "✓ Resolved" : "Mark Resolved"}
             </button>
           )}
@@ -134,25 +120,21 @@ export default function ComplaintDetail() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 20 }}>
-        {/* Left: complaint content */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div className="card">
             <h3 style={{ fontWeight: 700, marginBottom: 8, fontSize: 15 }}>Summary</h3>
             <p style={{ marginBottom: 6 }}>{c.summary_en}</p>
             {c.summary_hi && <p style={{ color: "#6b7280", fontSize: 13 }}>{c.summary_hi}</p>}
           </div>
-
           <div className="card">
             <h3 style={{ fontWeight: 700, marginBottom: 8, fontSize: 15 }}>Full Complaint Text</h3>
             <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>{c.raw_text}</p>
             {c.raw_audio_url && (
               <p style={{ marginTop: 10, fontSize: 12, color: "#6b7280" }}>
-                🎙️ Original voice note attached: <code>{c.raw_audio_url}</code>
+                🎙️ Voice note: <code>{c.raw_audio_url}</code>
               </p>
             )}
           </div>
-
-          {/* Message thread */}
           <div className="card">
             <h3 style={{ fontWeight: 700, marginBottom: 12, fontSize: 15 }}>Conversation Thread</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
@@ -171,23 +153,14 @@ export default function ComplaintDetail() {
                 </div>
               ))}
             </div>
-
-            {/* Reply box */}
             <form onSubmit={sendReply} style={{ display: "flex", gap: 8 }}>
-              <input
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
+              <input value={replyText} onChange={(e) => setReplyText(e.target.value)}
                 placeholder="Send a message to the patient…"
-                style={{ flex: 1, padding: "9px 12px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 14 }}
-              />
-              <button className="btn btn-primary" type="submit" disabled={!replyText.trim()}>
-                Send
-              </button>
+                style={{ flex: 1, padding: "9px 12px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 14 }} />
+              <button className="btn btn-primary" type="submit" disabled={!replyText.trim()}>Send</button>
             </form>
           </div>
         </div>
-
-        {/* Right: SLA info */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div className="card">
             <h3 style={{ fontWeight: 700, marginBottom: 12, fontSize: 15 }}>SLA Timers</h3>
@@ -207,7 +180,9 @@ function SlaRow({ label, value, done }: { label: string; value: string | null; d
     <div style={{ marginBottom: 12 }}>
       <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 2 }}>{label}</div>
       <div style={{ fontWeight: 600, color: done ? "#059669" : past ? "#dc2626" : "#1a1a2e" }}>
-        {done ? "✅ Completed" : past ? `⚠️ Overdue (${formatDistanceToNow(parseISO(value), { addSuffix: true })})` : formatDistanceToNow(parseISO(value), { addSuffix: true })}
+        {done ? "✅ Completed" : past
+          ? `⚠️ Overdue (${formatDistanceToNow(parseISO(value), { addSuffix: true })})`
+          : formatDistanceToNow(parseISO(value), { addSuffix: true })}
       </div>
     </div>
   );

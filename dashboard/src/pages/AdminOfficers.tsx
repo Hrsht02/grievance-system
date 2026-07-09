@@ -1,4 +1,5 @@
-import { useEffect, useState, FormEvent } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import Layout from "../components/Layout";
 import api from "../api";
 
@@ -21,10 +22,7 @@ export default function AdminOfficers() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function load() {
-    api.get("/admin/officers").then((r) => setOfficers(r.data));
-  }
-
+  function load() { api.get("/admin/officers").then((r) => setOfficers(r.data)); }
   useEffect(() => { load(); }, []);
 
   async function handleCreate(e: FormEvent) {
@@ -45,7 +43,7 @@ export default function AdminOfficers() {
   }
 
   async function deactivate(id: string) {
-    if (!confirm("Deactivate this officer? They will lose dashboard access.")) return;
+    if (!confirm("Deactivate this officer?")) return;
     await api.patch(`/admin/officers/${id}/deactivate`);
     load();
   }
@@ -83,9 +81,7 @@ export default function AdminOfficers() {
                 <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 4 }}>
                   <span style={{ fontWeight: 700 }}>{o.name}</span>
                   {!o.is_active && <span className="badge" style={{ background: "#f3f4f6", color: "#6b7280" }}>Inactive</span>}
-                  {o.sla_breaches > 2 && (
-                    <span className="badge badge-critical">⚠️ {o.sla_breaches} breaches</span>
-                  )}
+                  {o.sla_breaches > 2 && <span className="badge badge-critical">⚠️ {o.sla_breaches} breaches</span>}
                 </div>
                 <p style={{ fontSize: 13, color: "#6b7280" }}>{o.email} · District: {o.assigned_district}</p>
                 <div style={{ display: "flex", gap: 16, marginTop: 8, fontSize: 13 }}>
@@ -108,19 +104,13 @@ export default function AdminOfficers() {
   );
 }
 
-function Field({
-  label, value, onChange, type = "text", required = false
-}: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean }) {
+function Field({ label, value, onChange, type = "text", required = false }:
+  { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean }) {
   return (
     <div>
       <label style={{ display: "block", fontWeight: 600, marginBottom: 4, fontSize: 13 }}>{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-        style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 14 }}
-      />
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required}
+        style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: "1px solid #d1d5db", fontSize: 14 }} />
     </div>
   );
 }
