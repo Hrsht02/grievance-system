@@ -38,15 +38,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
-ALLOWED_ORIGINS = os.environ.get(
-    "ALLOWED_ORIGINS",
-    "https://grievance-system-virid.vercel.app,http://localhost:5173"
-).split(",")
+ALLOWED_ORIGINS = [
+    "https://grievance-system-virid.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
 
 app = FastAPI(title="Grievance System API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
