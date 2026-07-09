@@ -312,15 +312,18 @@ def get_officer_complaints(officer_id: str, status_filter: str | None = None) ->
 def get_complaint_detail_for_officer(complaint_id: str, officer_id: str) -> dict | None:
     rows = _request("GET",
         f"complaints?id=eq.{complaint_id}&assigned_officer_id=eq.{officer_id}"
-        "&select=*,patients(name,mobile_number),hospitals(name),departments(name)&limit=1")
+        "&select=*,patients(name,mobile_number),hospitals(name,phone_number,address),departments(name)&limit=1")
     if not rows:
         return None
     r = rows[0]
     is_anon = r.get("is_anonymous", False)
     pat = r.pop("patients", {}) or {}
+    hosp = r.pop("hospitals", {}) or {}
     r["patient_name"] = "Anonymous" if is_anon else pat.get("name", "")
     r["patient_mobile"] = None if is_anon else pat.get("mobile_number", "")
-    r["hospital_name"] = (r.pop("hospitals", {}) or {}).get("name", "")
+    r["hospital_name"] = hosp.get("name", "")
+    r["hospital_phone"] = hosp.get("phone_number", "")
+    r["hospital_address"] = hosp.get("address", "")
     r["department_name"] = (r.pop("departments", {}) or {}).get("name", "")
     return r
 

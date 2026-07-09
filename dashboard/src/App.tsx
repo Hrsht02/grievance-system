@@ -6,6 +6,7 @@ import ComplaintDetail from "./pages/ComplaintDetail";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminEscalations from "./pages/AdminEscalations";
 import AdminOfficers from "./pages/AdminOfficers";
+import AdminHospitals from "./pages/AdminHospitals";
 
 function RequireAuth({ children, role }: { children: ReactElement; role?: string }) {
   const token = localStorage.getItem("token");
@@ -24,6 +25,7 @@ export default function App() {
       <Route path="/admin" element={<RequireAuth role="superadmin"><AdminDashboard /></RequireAuth>} />
       <Route path="/admin/escalations" element={<RequireAuth role="superadmin"><AdminEscalations /></RequireAuth>} />
       <Route path="/admin/officers" element={<RequireAuth role="superadmin"><AdminOfficers /></RequireAuth>} />
+      <Route path="/admin/hospitals" element={<RequireAuth role="superadmin"><AdminHospitals /></RequireAuth>} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

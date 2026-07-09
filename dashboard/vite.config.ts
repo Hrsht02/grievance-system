@@ -13,6 +13,7 @@ export default defineConfig({
       '/admin/escalations': 'http://localhost:8000',
       '/admin/complaints': 'http://localhost:8000',
       '/admin/tags': 'http://localhost:8000',
+      '/admin/hospitals': 'http://localhost:8000',
       '/auth': 'http://localhost:8000',
     },
   },

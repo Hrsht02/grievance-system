@@ -261,3 +261,46 @@ class TagActionBody(BaseModel):
 def review_tag(tag: str, body: TagActionBody, admin: dict = Depends(require_superadmin)):
     db.review_tag(tag, body.action, body.merge_into)
     return {"ok": True}
+
+
+# ---------------------------------------------------------------------------
+# Hospitals
+# ---------------------------------------------------------------------------
+
+@app.get("/admin/hospitals")
+def list_hospitals(admin: dict = Depends(require_superadmin)):
+    hospitals = db._request("GET",
+        "hospitals?select=id,name,district,state,phone_number,address,email&order=name")
+    result = []
+    for h in hospitals:
+        # Count complaints
+        complaints = db._request("GET",
+            f"complaints?hospital_id=eq.{h['id']}&select=id")
+        h["complaint_count"] = len(complaints)
+        # Find assigned officer
+        officers = db._request("GET",
+            f"officers?assigned_district=eq.{urllib.parse.quote(h['district'] or '')}&is_active=eq.true&role=eq.officer&select=name&limit=1")
+        h["officer_name"] = officers[0]["name"] if officers else None
+        result.append(h)
+    return result
+
+
+class NewHospitalBody(BaseModel):
+    name: str
+    district: str
+    phone_number: str = ""
+    address: str = ""
+    email: str = ""
+
+
+@app.post("/admin/hospitals")
+def create_hospital(body: NewHospitalBody, admin: dict = Depends(require_superadmin)):
+    db._request("POST", "hospitals", body={
+        "name": body.name,
+        "district": body.district,
+        "state": "Bihar",
+        "phone_number": body.phone_number or None,
+        "address": body.address or None,
+        "email": body.email or None,
+    })
+    return {"ok": True}
